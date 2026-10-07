@@ -133,7 +133,7 @@ function advBrief(s){const out={flags:[],moves:[],lines:[]};const now=Date.now()
   if(days!=null&&days>=7)out.flags.push(`No activity for ${days} days.`);
   return out}
 function advLink(page,withA){const b=btoa(unescape(encodeURIComponent(JSON.stringify(withA?{u:SYNC.url,k:SYNC.key,a:SYNC.akey}:{u:SYNC.url,k:SYNC.key}))));return location.origin+location.pathname.replace(/[^/]*$/,'')+page+'#sync='+b}
-function advSetup(){view().innerHTML=`<div class="followbar">Advisor view</div><h1>Connect the Advisor view</h1><div class="card"><p class="note">Paste the three values from the Apps Script set-up. They are stored only on this device.</p><label class="f">Apps Script web-app URL</label><input class="tin" id="au"><label class="f">Secret key (Adnan's)</label><input class="tin" id="ak"><label class="f">Advisor key</label><input class="tin" id="aa"><div class="ctl"><button class="sbtn" id="asv">Connect</button></div></div>`;
+function advSetup(){$('#tabs').classList.add('hide');view().innerHTML=`<div class="followbar">Advisor view</div><h1>Connect the Advisor view</h1><div class="card"><p class="note">Paste the three values from the Apps Script set-up. They are stored only on this device.</p><label class="f">Apps Script web-app URL</label><input class="tin" id="au"><label class="f">Secret key (Adnan's)</label><input class="tin" id="ak"><label class="f">Advisor key</label><input class="tin" id="aa"><div class="ctl"><button class="sbtn" id="asv">Connect</button></div></div>`;
   $('#asv').onclick=()=>{SYNC={url:$('#au').value.trim(),key:$('#ak').value.trim(),akey:$('#aa').value.trim()};try{localStorage.setItem('adl-sync',JSON.stringify(SYNC))}catch(e){}location.reload()}}
 let advTab='brief';
 function renderParent(){if(!SYNC.url)return advSetup();const cp=$('#compose');if(cp&&(cp.contains(document.activeElement)||($('#ntxt')&&$('#ntxt').value.trim())))return;
@@ -179,6 +179,7 @@ function route(){const h=location.hash.replace(/^#\/?/,'')||'home';const [v,a,b]
   V();renderTop();const ib=$('#inBadge');if(ib){const n=unread().length;ib.textContent=n;ib.classList.toggle('hide',!n)}}
 function renderMap(){if(!FOLLOW&&location.hash.match(/^#\/(home|more|inbox)?$/))route()}
 function boot(){applyTheme();jaInit();
+  {const q=new URLSearchParams(location.search).get('sync');if(q&&!location.hash.startsWith('#sync='))location.hash='sync='+q}
   if(location.hash.startsWith('#sync=')){try{const o=JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(6)))));if(o.u){SYNC={url:o.u,key:o.k||'',akey:o.a||''};localStorage.setItem('adl-sync',JSON.stringify(SYNC))}}catch(e){}history.replaceState(null,'',location.pathname+(FOLLOW?'':'#/home'))}
   $('#themeBtn').onclick=toggleTheme;
   if(FOLLOW){parentMode=true;window.save=()=>{};window.schedulePush=()=>{};window.pushState=async()=>{};window.addXP=()=>{};$('.brand').innerHTML='Adnan · <b>Advisor view</b>';route();if(SYNC.url){pullState().then(()=>renderParent());setInterval(()=>pullState().then(()=>renderParent()),60000)}return}
