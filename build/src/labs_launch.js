@@ -1,5 +1,6 @@
 /* ================= Career Launch track: labs ================= */
 const MARKET=[
+ ['IoT & smart cities','iot','Connected devices, networks and dashboards for buildings, cities, utilities and industry.','Telecom operators\' IoT and smart-city units; industrial IoT and building-technology integrators; utilities\' digital teams'],
  ['Defence & security','emb','Localisation of defence spending is the largest single driver of electronics hiring.','SAMI and SAMI Advanced Electronics; defence system integrators; international defence OEMs with Saudi joint ventures'],
  ['Aerospace & UAV','per','Drones, avionics and sensors: closest to your LiDAR work.','Saudi UAV makers; aerospace maintenance and avionics firms; KACST aeronautics programmes'],
  ['Automotive & EV','per','New vehicle plants need electronics, test and quality engineers.','Ceer; Lucid (KAEC plant); suppliers setting up around new vehicle plants'],

@@ -1,6 +1,6 @@
 /* ================= Compass: interactive career profiling =================
    Self-report instrument. Five parts: interests, day-in-the-life choices, values,
-   skills, open questions. Scores eight career paths open to an EE graduate in KSA.
+   skills, open questions. Scores nine career paths open to an EE graduate in KSA.
    Results are a conversation starter for Adnan and his advisor, not a verdict. */
 
 const DIMS={H:'Hands-on hardware',C:'Coding',A:'Analysis & maths',S:'Systems integration',P:'People & persuasion',R:'Research & novelty',O:'Order & rigour'};
@@ -16,6 +16,7 @@ const PATHS=[
  {id:'test',name:'Test, validation & reliability engineer',what:'Proves that systems work and keep working: test plans, environmental and qualification testing, integration, failure analysis.',w:{O:3,H:2,S:2,A:1},need:['py','analog','comm'],sectors:'Defence and aerospace, automotive, telecom, energy',roles:'Test Engineer, Validation Engineer, Reliability Engineer, Systems Integration Engineer',track:'emb'},
  {id:'net',name:'Telecom, networks & security engineer',what:'Builds and protects communication systems: networks, wireless, industrial (OT) security.',w:{C:2,S:2,A:1,O:2},need:['net','linux','py'],sectors:'Telecom operators, cybersecurity firms, energy and utilities, government',roles:'Network Engineer, OT Security Engineer, Telecom Engineer',track:'ind'},
  {id:'tech',name:'Technical solutions & product engineer',what:'Bridges customers and engineering: understands the product deeply and explains, adapts and sells it; often with foreign partners.',w:{P:3,S:2,H:1},need:['comm','mcu'],sectors:'Foreign OEMs entering KSA (incl. Japanese), distributors, system integrators',roles:'Applications Engineer, Solutions Engineer, Technical Product Engineer',track:'launch'},
+ {id:'iot',name:'IoT & connected-systems engineer',what:'Builds connected products end to end: sensors and microcontrollers, the network that carries their data, and the backend and dashboards that use it.',w:{S:3,C:2,H:1,P:1},need:['mcu','py','net'],sectors:'Telecom operators\' IoT and smart-city units, industrial IoT integrators, utilities, facility and building technology',roles:'IoT Engineer, IoT Solutions Engineer, Connected Systems Engineer, Smart City Engineer',track:'emb'},
  {id:'grad',name:'Graduate study, then research',what:'A master\'s (and possibly a PhD) to specialise deeply, in KSA or abroad, leading to R&D roles.',w:{R:3,A:3,C:1},need:['py','dsp','comm'],sectors:'Universities, national research centres, corporate R&D labs',roles:'Graduate Researcher, R&D Engineer',track:'ind'}
 ];
 const PATH=Object.fromEntries(PATHS.map(p=>[p.id,p]));
@@ -25,12 +26,12 @@ const CQ_INT=[
  ['Writing C that talks directly to hardware registers',{C:1,H:1},{emb:1}],
  ['Hunting a bug that only appears once a day',{C:1,A:1,O:1},{}],
  ['Working through the maths behind an algorithm, such as a filter',{A:2,R:1},{}],
- ['Making several subsystems work together for the first time',{S:2},{test:1}],
+ ['Making several subsystems work together for the first time',{S:2},{test:1,iot:1}],
  ['Explaining a technical product to a client and answering hard questions',{P:2},{tech:1}],
  ['Designing a careful test plan and running it step by step',{O:2},{test:1}],
  ['Reading research papers about a new technique',{R:2,A:1},{grad:1}],
  ['Laying out a PCB and routing it cleanly',{H:1,O:1},{hw:1}],
- ['Writing Python to analyse and plot sensor data',{C:1,A:1},{}],
+ ['Writing Python to analyse and plot sensor data',{C:1,A:1},{iot:1}],
  ['Visualising and filtering a LiDAR point cloud',{A:1,C:1,R:1},{per:1}],
  ['Configuring a network and analysing packets in Wireshark',{S:1,C:1},{net:1}],
  ['Leading a small team to a hard deadline',{P:2,O:1},{}],
@@ -48,11 +49,11 @@ const CQ_SCN=[
  [['Verify a chip block with a SystemVerilog testbench',['semi']],['Harden a factory network against intrusion',['net']]],
  [['Demo the product to a Japanese partner\'s engineers in Tokyo',['tech']],['Write a paper on a new point-cloud method',['grad','per']]],
  [['Fit a detection algorithm onto a microcontroller with 64 KB of RAM',['emb']],['Train a model on a GPU to classify objects',['per','grad']]],
- [['Lead the integration day where five subsystems meet',['test','tech']],['Spend a week alone perfecting one module',['semi','emb','hw']]]
+ [['Lead the integration day where five subsystems meet',['test','tech','iot']],['Spend a week alone perfecting one module',['semi','emb','hw']]]
 ];
 const CQ_VAL=[
  ['Large, stable employer','Fast-moving startup or small company',{test:1,semi:1,net:1,hw:1},{per:1,emb:1,tech:1}],
- ['Become a deep specialist','Stay broad and move across areas',{semi:1,per:1,grad:1,emb:1},{tech:1,test:1,net:1}],
+ ['Become a deep specialist','Stay broad and move across areas',{semi:1,per:1,grad:1,emb:1},{tech:1,test:1,net:1,iot:1}],
  ['Work in a lab or the field with hardware','Work mostly at a screen',{hw:1,test:1,emb:1},{net:1,semi:1,per:1}],
  ['Start earning and gaining experience now','Invest one to two more years in a master\'s',{grad:-1},{grad:2}],
  ['Clear structure and defined tasks','Ambiguity and inventing new things',{test:1,net:1,hw:1},{per:1,grad:1,tech:1}],
@@ -69,7 +70,7 @@ function compassScore(c){if(!c)return null;const a=c.a||{};const out={};
     let raw=0,mx=0;CQ_INT.forEach((q,i)=>{const r=a['i'+i];let w=0;for(const d in q[1])w+=q[1][d]*(p.w[d]||0);w+=3*(q[2][p.id]||0);if(!w||!r)return;raw+=(r-3)*w;mx+=2*w});
     const fi=mx?50+50*raw/mx:50;
     let sc=0,sn=0;CQ_SCN.forEach((pr,i)=>{const inA=pr[0][1].includes(p.id),inB=pr[1][1].includes(p.id);if(!inA&&!inB)return;sn++;const ch=a['s'+i];if((ch===0&&inA)||(ch===1&&inB))sc++});
-    const fs=sn?100*sc/sn:50;
+    const fs=100*(sc+1)/(sn+2); // smoothed: one choice should not swing a path from 0 to 100
     let vr=0,vm=0;CQ_VAL.forEach((v,i)=>{const ch=a['v'+i];const x=v[2][p.id]||0,y=v[3][p.id]||0;if(!x&&!y)return;vm+=Math.max(Math.abs(x),Math.abs(y));if(ch===0)vr+=x;if(ch===1)vr+=y});
     const fv=vm?50+50*vr/vm:50;
     const rd=p.need.map(k=>(a['k_'+k]||0)/4);const fr=100*rd.reduce((x,y)=>x+y,0)/rd.length;
@@ -120,15 +121,15 @@ function vCompass(part){const c=C();
     const R=compassScore(c);const first=!c.done;c.done=Date.now();c.hist.push({t:Date.now(),top:R.rank.slice(0,3).map(id=>[id,R.paths[id].fit])});if(c.hist.length>12)c.hist=c.hist.slice(-12);
     logEvent('compass','compass','Top paths: '+R.rank.slice(0,3).map(id=>PATH[id]._en||PATH[id].name).join(', '));if(first)addXP(60);else save();checkBadges();go('#/compass/results')}}
 function compassIntro(){view().innerHTML=`<div class="eyebrow">Compass</div><h1>Find the work that fits you</h1>
-  <div class="card">${B('cintro','<p>Before choosing a direction, Compass maps what you <b>enjoy</b>, how you like to <b>work</b>, what you <b>value</b>, and what you can <b>already do</b>. It then scores eight career paths open to an electrical engineer in Saudi Arabia.</p><ul><li><b>Five short parts</b>, about 15 minutes. Your answers save as you go.</li><li><b>No right answers.</b> It works only if you answer as you are, not as you think you should be.</li><li><b>It is a starting point.</b> The results open a conversation with your advisor; they do not decide for you.</li><li>You can retake it any time; your advisor sees how your answers change.</li></ul>')}
+  <div class="card">${B('cintro','<p>Before choosing a direction, Compass maps what you <b>enjoy</b>, how you like to <b>work</b>, what you <b>value</b>, and what you can <b>already do</b>. It then scores nine career paths open to an electrical engineer in Saudi Arabia.</p><ul><li><b>Five short parts</b>, about 15 minutes. Your answers save as you go.</li><li><b>No right answers.</b> It works only if you answer as you are, not as you think you should be.</li><li><b>It is a starting point.</b> The results open a conversation with your advisor; they do not decide for you.</li><li>You can retake it any time; your advisor sees how your answers change.</li></ul>')}
   <div class="ctl"><button class="sbtn gold" onclick="go('#/compass/int')">Start Compass →</button></div></div>
-  <div class="card"><h3>The eight paths</h3>${PATHS.map(p=>`<p style="margin:8px 0"><b>${esc(p.name)}</b><br><span class="note">${esc(p.what)}</span></p>`).join('')}</div>`}
+  <div class="card"><h3>The nine paths</h3>${PATHS.map(p=>`<p style="margin:8px 0"><b>${esc(p.name)}</b><br><span class="note">${esc(p.what)}</span></p>`).join('')}</div>`}
 function compassResults(){const c=C();const R=compassScore(c);if(!R){go('#/compass/int');return}const top=R.rank.slice(0,3);const gap=R.paths[top[0]].fit-R.paths[top[1]].fit;const foc=ADV.focus&&PATH[ADV.focus];
   view().innerHTML=`<div class="row"><div class="eyebrow">Compass results · ${new Date(c.done).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div><span class="spacer"></span><button class="sbtn alt sm" onclick="go('#/compass/int')">Edit answers</button></div><h1>Your top paths</h1>
   <p class="note">${gap<5?B('close',`Your top two paths are close (${R.paths[top[0]].fit} vs ${R.paths[top[1]].fit}). That is useful information: talk to people doing both jobs before choosing.`,{a:R.paths[top[0]].fit,b:R.paths[top[1]].fit}):B('clear',`<b>${esc(PATH[top[0]].name)}</b> stands out for you. Test it against reality: speak to two people doing this job.`,{p:esc(PATH[top[0]].name)})}</p>
   ${foc?`<div class="card" style="background:var(--goldsoft);border:0"><div class="eyebrow">Your advisor's suggested focus</div><b>${esc(foc.name)}</b></div>`:''}
   ${top.map((id,i)=>pathCard(R,id,i+1)).join('')}
-  <div class="grid g2"><div class="card"><h3>All eight paths</h3>${pathRanking(R)}</div><div class="card"><h3>How you like to work</h3><p class="note" style="margin-top:0">From your interest ratings, 0–100.</p>${dimBars(R.dim)}</div></div>
+  <div class="grid g2"><div class="card"><h3>All nine paths</h3>${pathRanking(R)}</div><div class="card"><h3>How you like to work</h3><p class="note" style="margin-top:0">From your interest ratings, 0–100.</p>${dimBars(R.dim)}</div></div>
   <div class="card"><h3>What next</h3>${B('next',`<ol><li>Open <a href="#/m/l02">Choose a direction</a> to turn these results into a decision memo.</li><li>Add two people doing your top path to <a href="#/pipeline/net">Network</a> and ask for a 20-minute call.</li><li>Start the track that closes your biggest skill gap: <a href="#/track/${PATH[top[0]].track}">${esc(TRACKS.find(x=>x.id===PATH[top[0]].track).name)}</a>.</li></ol>`,{tr:PATH[top[0]].track,tn:esc(TRACKS.find(x=>x.id===PATH[top[0]].track).name)})}</div>
   ${c.hist.length>1?`<div class="card"><h3>How your results changed</h3>${c.hist.slice().reverse().map(h=>`<div class="note">${new Date(h.t).toLocaleDateString('en-GB')} · ${h.top.map(([id,f])=>esc(PATH[id].name)+' '+f).join(' · ')}</div>`).join('')}</div>`:''}
   <p class="note">Compass is self-report. It reflects how you see yourself today; experience will sharpen it.</p>`}
