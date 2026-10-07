@@ -1,6 +1,6 @@
 # Adnan's Launchpad — session handoff
 
-Last updated: 2026-10-07 · Status: **Batch 1 + Japanese practice mode built and tested (v2). Not yet deployed.**
+Last updated: 2026-10-07 · Status: **Live (v6). Adnan connected and completed Compass on 2026-10-07.**
 
 ## What it is
 Career PWA for Adnan (owner's nephew), forked from majed-launchpad. Repo to be: malmajed/adnan-launchpad → https://malmajed.github.io/adnan-launchpad/
@@ -17,6 +17,14 @@ Career PWA for Adnan (owner's nephew), forked from majed-launchpad. Repo to be: 
 - Lab widgets: intros translated; Adnan is told to write CV, pitch, STAR and outreach in English.
 - New missions need a matching entry in `ja/launch.json` (same order of cards/quiz/srs; answer index comes from English).
 - Japanese was written by Claude; a native speaker should review before relying on it for JLPT study.
+
+## Notes & tasks history (v6)
+- Nothing is deleted: advisor "Archive" sets `n.archived` (hidden from Adnan, kept in History; Restore available). Adnan's replies are a thread in `state.advThread[id]` (latest also in `advReply`).
+- Advisor writes go through `advMutate()`: re-reads the live advisor record first, then applies the change and pushes (safe across your devices).
+- Advisor view History tab: per item Sent / Read / every reply / Done / Archived, focus-path changes, CSV download.
+- Compass v5: 9th path `iot` (IoT & connected systems); day-in-the-life score smoothed (sc+1)/(sn+2).
+- Live backend: Sheet "Adnan Launchpad Progress", web app deployed 2026-10-07 (keys held by the owner, not in repo).
+- iPhone: home-screen app has its own storage; connect it via More → Settings → Cloud sync (guide updated).
 
 ## Architecture
 - localStorage keys prefixed `adl-` (same origin as Majed's app). SW cache prefix `adnan-lp-`, deletes only its own caches.
