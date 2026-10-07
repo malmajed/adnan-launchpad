@@ -3,9 +3,38 @@ import os,re,sys,datetime
 R=os.path.dirname(os.path.dirname(os.path.abspath(__file__)));S=os.path.join(R,'build','src')
 rd=lambda f:open(os.path.join(S,f)).read()
 ver=sys.argv[1] if len(sys.argv)>1 else 'dev'
+import json
+def kata2hira(x):return ''.join(chr(ord(c)-0x60) if 'ァ'<=c<='ヶ' else c for c in x)
+KJ=re.compile(r'[\u4e00-\u9fff々]')
+def ruby(orig,hira):
+    # align kana runs in the surface with the reading so furigana sits only over kanji
+    parts=re.findall(r'[\u4e00-\u9fff々]+|[^\u4e00-\u9fff々]+',orig)
+    pat=''.join('(.+?)' if KJ.match(p) else re.escape(kata2hira(p)) for p in parts)
+    m=re.fullmatch(pat,hira)
+    if not m:return '<ruby>'+orig+'<rt>'+hira+'</rt></ruby>'
+    g=iter(m.groups());return ''.join('<ruby>'+p+'<rt>'+next(g)+'</rt></ruby>' if KJ.match(p) else p for p in parts)
+def build_ja():
+    d=os.path.join(S,'ja')
+    if not os.path.isdir(d):return ''
+    J={k:json.load(open(os.path.join(d,k+'.json'),encoding='utf-8')) for k in ['ui','compass','launch']}
+    ui=dict(J['ui']['ui']);ui.update({'@'+k:v for k,v in J['ui'].get('ui_blocks',{}).items()})
+    data={'ui':ui,'re':J['ui'].get('re',[]),'tracks':J['launch']['tracks'],'m':J['launch']['m'],'compass':J['compass']}
+    import pykakasi;kk=pykakasi.kakasi();furi={};over=J['ui'].get('readings',{})
+    def walk(o):
+        if isinstance(o,str):
+            for seg in re.split(r'<[^>]+>',o):
+                if KJ.search(seg):
+                    for tk in kk.convert(seg):
+                        if KJ.search(tk['orig']):furi[tk['orig']]=ruby(tk['orig'],over.get(tk['orig'],tk['hira']))
+        elif isinstance(o,dict):[walk(v) for v in o.values()]
+        elif isinstance(o,list):[walk(v) for v in o]
+    walk(data);
+    for k,v in over.items():furi[k]=ruby(k,v)
+    data['furi']=furi
+    return 'const JA_DATA='+json.dumps(data,ensure_ascii=False)+';'
 order=['core.js','app.js','icons.js','helpers.js','adnan.js','compass.js']
 extra=sorted(f for f in os.listdir(S) if f.endswith('.js') and f not in order)  # batch files: labs_mba.js, data_mba.js ...
-js='\n'.join([rd('core.js'),f"const BUILD='{ver} · {datetime.date.today()}';"]+[rd(f) for f in order[1:]+extra]+['boot();'])
+js='\n'.join([rd('core.js'),build_ja(),f"const BUILD='{ver} · {datetime.date.today()}';"]+[rd(f) for f in order[1:]+extra]+['boot();'])
 head='''<!doctype html>
 <html lang="en">
 <head>

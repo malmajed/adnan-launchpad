@@ -1,6 +1,6 @@
 # Adnan's Launchpad — session handoff
 
-Last updated: 2026-10-07 · Status: **Batch 1 built and tested (v1). Not yet deployed.**
+Last updated: 2026-10-07 · Status: **Batch 1 + Japanese practice mode built and tested (v2). Not yet deployed.**
 
 ## What it is
 Career PWA for Adnan (owner's nephew), forked from majed-launchpad. Repo to be: malmajed/adnan-launchpad → https://malmajed.github.io/adnan-launchpad/
@@ -10,12 +10,20 @@ Career PWA for Adnan (owner's nephew), forked from majed-launchpad. Repo to be: 
 - Advisor view tabs: Brief (rule-based flags + suggested moves), Compass, Pipeline (+CV workbench), Check-ins, Learning (+STAR stories), Guide him (send note/task, focus path, device links).
 - Tracks: Career Launch l01–l10 DONE (labs_launch.js, data_launch.js). Embedded Depth e01–e10, Perception p01–p10, Industry & Japan i01–i08: titles only (batches 2–4).
 
+## Japanese practice mode (v2)
+- Toggle: header button (あ / EN) or Settings → Language; `state.settings.lang`, `state.settings.furi`. Advisor view always English.
+- Content in `build/src/ja/`: `ui.json` (exact-match UI phrases, `ui_blocks` = whole paragraphs used via `B(key,en,vars)`, `re` patterns, `readings` overrides), `compass.json`, `launch.json` (tracks + l01–l10). make.py needs `pykakasi` (pip) to build the furigana map.
+- Runtime `ja.js`: `jaInit()` swaps mission/track/Compass text in memory at boot; a MutationObserver translates UI text nodes and adds ruby. Card/quiz/review show an EN reveal. Activity logs keep English titles (`enTitle`).
+- Lab widgets: intros translated; Adnan is told to write CV, pitch, STAR and outreach in English.
+- New missions need a matching entry in `ja/launch.json` (same order of cards/quiz/srs; answer index comes from English).
+- Japanese was written by Claude; a native speaker should review before relying on it for JLPT study.
+
 ## Architecture
 - localStorage keys prefixed `adl-` (same origin as Majed's app). SW cache prefix `adnan-lp-`, deletes only its own caches.
 - Advisor channel: ADV object (core.js) stored in sheet `advisor`; GET returns {state, advisor}; advisor writes need ADVISOR_KEY (`akey`). Advisor never pushes Adnan's state (FOLLOW mode disables save).
 - Function overrides live in adnan.js; old copies were removed from app.js.
 - Code.gs v5 writes readable tabs: summary, pipeline, network, checkins, compass, activity. Optional `setupWeeklyDigest()` (not run).
-- Build: `python3 build/make.py vN` (always bump). Test: serve root on 8765, `node build/test/mock.js`, `node build/test/e2e.js <outdir>`.
+- Build: `python3 build/make.py vN` (always bump). Test: serve root on 8765, `node build/test/mock.js`, `node build/test/e2e.js <outdir>` and `node build/test/ja.js <outdir>` (restart the mock between them).
 
 ## Deploy steps (pending)
 1. Create GitHub repo malmajed/adnan-launchpad, upload repo, Pages source = GitHub Actions.

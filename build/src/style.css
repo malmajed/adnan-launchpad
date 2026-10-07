@@ -199,3 +199,13 @@ table.t th{font-weight:600;color:var(--mut);background:var(--sur2)}
 .icorow .mini:nth-child(n+12):hover::after{left:auto;right:0;transform:none}
 
 .ico{font-size:1.4rem;width:36px;text-align:center}
+html[lang=ja] body{font-family:var(--sans),"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif}
+html[lang=ja] h1,html[lang=ja] h2,html[lang=ja] h3{font-family:var(--serif),"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif}
+html[lang=ja] #view{line-height:1.85}
+rt{font-size:.55em;font-weight:400;opacity:.8;letter-spacing:0}
+details.enx{margin:10px 0 0;padding:8px 10px;border:1px dashed var(--line);border-radius:8px;font-size:.88rem;color:var(--mut)}
+details.enx summary{cursor:pointer;font:600 .75rem var(--sans);letter-spacing:.08em;color:var(--gold)}
+details.enx[open] summary{margin-bottom:6px}
+ruby{ruby-align:center}
+.tabs button span.jf,.tabs button .jf span{display:inline;height:auto;font-size:inherit;line-height:inherit}
+html[lang=ja] .tabs button{font-size:.68rem}
