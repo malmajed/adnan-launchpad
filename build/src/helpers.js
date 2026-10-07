@@ -1,0 +1,13 @@
+function classifyLab(el,done,cfg){let html=`<p class="note">${cfg.intro||''}</p>`+cfg.items.map((it,i)=>`<div style="margin:8px 0"><div style="font-size:.93rem">${it[0]}</div><select class="tin" data-c="${i}" style="margin-top:4px"><option value="">— choose —</option>${cfg.cats.map(c=>`<option>${c}</option>`).join('')}</select></div>`).join('')+`<div class="ctl"><button class="sbtn" id="cc">Check</button></div><div id="cm"></div>`;el.innerHTML=html;
+ $('#cc',el).onclick=()=>{let n=0;$$('[data-c]',el).forEach(s=>{const it=cfg.items[+s.dataset.c],g=s.value===it[1];if(g)n++;s.style.borderColor=s.value?g?'var(--ok)':'var(--bad)':'';s.title=it[2]||''});const need=cfg.pass||Math.ceil(cfg.items.length*.75);
+  $('#cm',el).innerHTML=`<div class="readout ${n>=need?'ok':''}"><b>${n}/${cfg.items.length}.</b> ${cfg.why}</div>${cfg.items.map(it=>`<div class="note">• ${it[0].replace(/<[^>]+>/g,'').slice(0,60)}… → <b>${it[1]}</b>${it[2]?': '+it[2]:''}</div>`).join('')}`;if(n>=need)done()}}
+
+const CUST=(id)=>state.custom[id]||(state.custom[id]={});
+function calcLab(el,m,done,cfg){const v0={};cfg.inputs.forEach(([id,l,val])=>v0[id]=val);
+  el.innerHTML=`<div class="grid g3 g2m">${cfg.inputs.map(([id,l,val,st])=>numIn('k_'+id,l,val,{step:st})).join('')}</div><div id="kout" style="margin-top:12px"></div>${cfg.challenge?`<div class="card gold" style="box-shadow:none;margin-top:12px"><div class="eyebrow">Challenge</div><p style="margin:.3rem 0">${cfg.challenge.text}</p>${cfg.challenge.ask?`<div class="row"><input class="tin" id="kask" type="number" step="any" inputmode="decimal" style="max-width:180px"><span class="note">${cfg.challenge.ask.unit||''}</span><button class="sbtn" id="kchk">Check</button></div>`:''}<div id="kmsg"></div></div>`:''}`;
+  let out={},hit=false;const read=()=>{const v={};cfg.inputs.forEach(([id])=>v[id]=V('k_'+id,el));return v};
+  const run=()=>{const v=read();const r=cfg.compute(v,v0);out=r.out||{};$('#kout',el).innerHTML=r.html;
+    if(cfg.challenge&&cfg.challenge.test&&!hit&&cfg.challenge.test(v,out,v0)){hit=true;$('#kmsg',el).innerHTML=`<div class="readout ok"><b>Challenge met.</b> ${cfg.challenge.why||''}</div>`;done()}};
+  $$('input[id^="k_"]',el).forEach(x=>x.oninput=run);run();
+  const ck=$('#kchk',el);if(ck)ck.onclick=()=>{const a=cfg.challenge.ask;const v=read();const t=a.ans(v,out);const g=parseFloat($('#kask',el).value);const ok=Math.abs(g-t)<=a.tol;$('#kmsg',el).innerHTML=`<div class="readout ${ok?'ok':'bad'}"><b>${ok?'Correct.':'Not quite: '+fmt(t,a.dp==null?1:a.dp)+' '+(a.unit||'')}</b> ${a.why?a.why(v,out):''}</div>`;if(ok)done()}}
+/* simple XY plot */
