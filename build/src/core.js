@@ -9,7 +9,7 @@
 /* ---------- profiles (one Sheet, one state per person) ---------- */
 const USERS=[{id:'adnan',name:'Adnan'}];
 const USER='adnan';
-const LSKEY='adl-state';
+const LSKEY=window.FOLLOW?'adl-follow-state':'adl-state';
 /* ---------- state helpers ---------- */
 let state={progress:{},custom:{},time:{},log:[]};try{state=Object.assign(state,JSON.parse(localStorage.getItem(LSKEY)||'{}'))}catch(e){}
 function save(){state.savedAt=Date.now();try{localStorage.setItem(LSKEY,JSON.stringify(state))}catch(e){}schedulePush()}
@@ -29,7 +29,7 @@ function schedulePush(){if(!SYNC.url||!USER)return;clearTimeout(pushT);pushT=set
 async function pushState(){if(!SYNC.url)return;try{setSyncStatus('busy','Saving to Drive…');const r=await fetch(SYNC.url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({key:SYNC.key,state,device:navigator.platform,user:USER})});const j=await r.json();if(j.error)throw new Error(j.error);setSyncStatus('ok','Saved to Drive '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}))}catch(e){setSyncStatus('err','Not saved to Drive: '+e.message)}}
 async function pullState(){if(!SYNC.url||!USER)return false;try{setSyncStatus('busy','Loading from Drive…');const r=await fetch(SYNC.url+'?key='+encodeURIComponent(SYNC.key)+'&user='+USER+'&t='+Date.now());const j=await r.json();if(j.error)throw new Error(j.error);if(j.advisor)setADV(j.advisor);
   let fresh=false;try{fresh=localStorage.getItem('adl-fresh')==='1'}catch(e){}if(fresh){try{localStorage.removeItem('adl-fresh')}catch(e){}}
-  if(j.state&&(fresh||(j.state.savedAt||0)>(state.savedAt||0))){state=Object.assign({progress:{},custom:{},time:{},log:[]},j.state);try{localStorage.setItem(LSKEY,JSON.stringify(state))}catch(e){}renderTop();renderMap();if(parentMode)renderParent();setSyncStatus('ok','Loaded from Drive (saved '+new Date(state.savedAt).toLocaleString('en-GB')+')');return true}
+  if(j.state&&(window.FOLLOW||fresh||(j.state.savedAt||0)>(state.savedAt||0))){state=Object.assign({progress:{},custom:{},time:{},log:[]},j.state);try{localStorage.setItem(LSKEY,JSON.stringify(state))}catch(e){}renderTop();renderMap();if(parentMode)renderParent();setSyncStatus('ok','Loaded from Drive (saved '+new Date(state.savedAt).toLocaleString('en-GB')+')');return true}
   setSyncStatus('ok','Drive is up to date');if((state.savedAt||0)>(j.state?j.state.savedAt||0:0))pushState();return false}catch(e){setSyncStatus('err','Could not reach Drive: '+e.message);return false}}
 function saveSyncSettings(){SYNC={url:document.getElementById('syncUrl').value.trim(),key:document.getElementById('syncKey').value.trim(),akey:SYNC.akey||''};try{localStorage.setItem('adl-sync',JSON.stringify(SYNC));localStorage.setItem('adl-fresh','1')}catch(e){}if(SYNC.url)pullState().then(()=>pushState());else setSyncStatus('off','Cloud sync is off')}
 
