@@ -26,6 +26,14 @@ Career PWA for Adnan (owner's nephew), forked from majed-launchpad. Repo to be: 
 - Live backend: Sheet "Adnan Launchpad Progress", web app deployed 2026-10-07 (keys held by the owner, not in repo).
 - iPhone: home-screen app has its own storage; connect it via More → Settings → Cloud sync (guide updated).
 
+## Rise at Legrand (v9, 2026-10-23)
+- Adnan employed at Legrand Saudi Arabia as Marketing Engineer (from Oct 2026). Constant `JOB` in labs_job.js.
+- New first track `job` (j01–j10): data_job.js, labs_job.js (formLab helper, plan90, portfolio, specchain, present, battlecard, fab, smart, dcpower, wins, growth). Wins log in `state.wins`, shown on Home and in Advisor Learning tab.
+- Advisor Brief: "Employed" line, wins cadence flag (>30 days), job-search flags removed.
+- Career guide Doc for the owner: https://claude.ai/artifact/Va4WczbRVMWWFfXwRbTvmt
+- Not yet translated to Japanese (j missions show English in 日本語 mode).
+- Fixes v7–v8: newly connected device adopts cloud copy (`adl-fresh`); Advisor view uses its own storage (`adl-follow-state`).
+
 ## Architecture
 - localStorage keys prefixed `adl-` (same origin as Majed's app). SW cache prefix `adnan-lp-`, deletes only its own caches.
 - Advisor channel: ADV object (core.js) stored in sheet `advisor`; GET returns {state, advisor}; advisor writes need ADVISOR_KEY (`akey`). Advisor never pushes Adnan's state (FOLLOW mode disables save).

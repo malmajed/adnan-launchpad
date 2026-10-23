@@ -72,9 +72,10 @@ const IC={
 };
 const ico=(k,sz,sw)=>`<svg class="ic" width="${sz||22}" height="${sz||22}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw||1.8}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]||IC.target}</svg>`;
 /* track colours: [main, soft background (light), soft background (dark)] */
-const TC={launch:{c:'#0E8C8C',g:'linear-gradient(135deg,#0B5E63,#0E8C8C)',i:'rocket'},emb:{c:'#D9711E',g:'linear-gradient(135deg,#9A4A0E,#D9711E)',i:'cpu'},per:{c:'#3C5FD0',g:'linear-gradient(135deg,#22378A,#3C5FD0)',i:'crosshair'},ind:{c:'#B4367A',g:'linear-gradient(135deg,#7A1F55,#B4367A)',i:'globe'}};
+const TC={job:{c:'#0F6E8C',g:'linear-gradient(135deg,#0B1F3A,#0F6E8C)',i:'briefcase'},launch:{c:'#0E8C8C',g:'linear-gradient(135deg,#0B5E63,#0E8C8C)',i:'rocket'},emb:{c:'#D9711E',g:'linear-gradient(135deg,#9A4A0E,#D9711E)',i:'cpu'},per:{c:'#3C5FD0',g:'linear-gradient(135deg,#22378A,#3C5FD0)',i:'crosshair'},ind:{c:'#B4367A',g:'linear-gradient(135deg,#7A1F55,#B4367A)',i:'globe'}};
 /* one icon per mission */
-const MICON={l01:'map',l02:'target',l03:'doc',l04:'users',l05:'mic',l06:'handshake',l07:'search',l08:'chat',l09:'cpu',l10:'scale',
+const MICON={j01:'calendar',j02:'boxes',j03:'flow',j04:'mic',j05:'shield',j06:'doc',j07:'cpu',j08:'gauge',j09:'target',j10:'trend',
+ l01:'map',l02:'target',l03:'doc',l04:'users',l05:'mic',l06:'handshake',l07:'search',l08:'chat',l09:'cpu',l10:'scale',
  e01:'cpu',e02:'clock',e03:'flow',e04:'layers',e05:'grid',e06:'gauge',e07:'layout',e08:'activity',e09:'check',e10:'shield',
  p01:'crosshair',p02:'scatter',p03:'boxes',p04:'globe',p05:'curve',p06:'merge',p07:'tree',p08:'search',p09:'map',p10:'rocket',
  i01:'landmark',i02:'shield',i03:'truck',i04:'cpu',i05:'chat',i06:'handshake',i07:'book',i08:'library'};

@@ -19,12 +19,13 @@ const WIKI=t=>'https://en.wikipedia.org/wiki/'+t;
 
 /* ---------- registry (filled by track data files) ---------- */
 const TRACKS=[
+ {id:'job',ico:'◆',name:'Rise at Legrand',sub:'Your first year as a marketing engineer: products, projects, presenting, insight, visibility',batch:1,titles:['Your first 90 days','Know the Legrand portfolio','How projects are won in Saudi Arabia','Technical presentations and product training','Competitor and market insight','Technical marketing content','Smart buildings and connected products','Datacenters: the growth engine','Visibility and your wins log','Building your next options']},
  {id:'launch',ico:'➶',name:'Career Launch',sub:'Market map, CV, story, network, interviews, offers',batch:1,titles:['Map the market: where electronics engineers work','Choose a direction: from Compass to a decision','A CV that gets interviews','LinkedIn and a GitHub portfolio','Your story: the 30-second pitch and the timeline question','Networking and informational interviews','Reading job ads and passing the screen','Behavioural interviews: STAR stories','Technical interviews for embedded and hardware roles','Offers and choosing the first job']},
  {id:'emb',ico:'⌁',name:'Embedded Depth',sub:'Firmware, buses, RTOS, embedded Linux, boards, test',batch:2,titles:['Embedded C: memory, pointers and volatile','Interrupts, timers and real-time thinking','Buses: UART, SPI, I2C and CAN','RTOS fundamentals','Embedded Linux essentials','Power and low-power design','From schematic to a working PCB','Debugging hardware: scope and logic analyser','Test, validation and qualification','Reliability and safety standards']},
  {id:'per',ico:'◎',name:'Perception & Autonomy',sub:'LiDAR, point clouds, fusion, ROS 2, capstone build',batch:3,titles:['Sensors for autonomous systems','LiDAR principles: time of flight to point cloud','Point-cloud processing','Coordinate frames and transforms','The Kalman filter','Sensor fusion','ROS 2 in practice','Computer vision essentials','Localisation and SLAM concepts','Capstone: a LiDAR-equipped rover']},
  {id:'ind',ico:'◇',name:'Industry & Japan',sub:'Saudi localisation, sectors, Japanese partners, JLPT, study abroad',batch:4,titles:['Localisation and Vision 2030: why your job exists','Defence and aerospace electronics','Automotive and EV','Semiconductors','Telecom, networks and security','Working with Japanese companies','The JLPT path to business Japanese','Graduate study: Japan and beyond']}
 ];
-const PFX={launch:'l',emb:'e',per:'p',ind:'i'};
+const PFX={job:'j',launch:'l',emb:'e',per:'p',ind:'i'};
 const TOTAL=()=>TRACKS.reduce((n,t)=>n+t.titles.length,0);
 const M={};          // mission id -> mission object
 const LABS={};       // lab key -> fn(el, mission, done)
@@ -32,7 +33,7 @@ function addMissions(list){list.forEach(m=>{if(m.sets)m.quiz=m.sets.flatMap(st=>
 const mid=(t,i)=>PFX[t]+String(i+1).padStart(2,'0');
 
 /* ---------- state defaults ---------- */
-function ensure(){const d={progress:{},custom:{},time:{},log:[],xp:0,srs:{},goals:{},days:{},mins:{},conf:{},cow:{},compass:null,checkins:{},apps:[],contacts:[],stories:[],cv:{},advRead:{},advReply:{},taskDone:{},settings:{shareRefl:false},refl:{},badges:{},reviews:0,name:profName(USER)};for(const k in d)if(state[k]==null)state[k]=d[k];if(USER)state.name=profName(USER);if(!state.settings)state.settings={shareRefl:false}}
+function ensure(){const d={progress:{},custom:{},time:{},log:[],xp:0,srs:{},goals:{},days:{},mins:{},conf:{},cow:{},compass:null,checkins:{},apps:[],contacts:[],wins:[],stories:[],cv:{},advRead:{},advReply:{},taskDone:{},settings:{shareRefl:false},refl:{},badges:{},reviews:0,name:profName(USER)};for(const k in d)if(state[k]==null)state[k]=d[k];if(USER)state.name=profName(USER);if(!state.settings)state.settings={shareRefl:false}}
 const profName=u=>'Adnan';
 ensure();
 const P=id=>state.progress[id]||(state.progress[id]={status:'new',steps:{},best:0,attempts:0,xp:0});
@@ -60,6 +61,8 @@ const BADGES=[
  ['compass','🧭','Compass complete',s=>!!(s.compass&&s.compass.done)],
  ['first','🚀','First mission',s=>done().length>=1],
  ['five','🎯','Five missions',s=>done().length>=5],
+ ['job','◆','Rise at Legrand complete',s=>trackDone('job')],
+ ['wins10','🏆','Ten wins logged',s=>(s.wins||[]).length>=10],
  ['launch','➶','Career Launch complete',s=>trackDone('launch')],
  ['emb','⌁','Embedded Depth complete',s=>trackDone('emb')],
  ['per','◎','Perception & Autonomy complete',s=>trackDone('per')],
