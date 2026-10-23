@@ -51,6 +51,6 @@ head='''<!doctype html>
 tail='<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").then(r=>{r.update();setInterval(()=>r.update(),60*60*1000)}).catch(()=>{});let rl=false;navigator.serviceWorker.addEventListener("controllerchange",()=>{if(!rl){rl=true;location.reload()}})}</script>\n</body>\n</html>\n'
 out=head+"<title>Adnan's Launchpad</title>\n<style>\n"+rd('style.css')+"\n</style>\n</head>\n<body>"+rd('body.html')+"\n<script>\n"+js+"\n</script>\n"+tail
 open(os.path.join(R,'index.html'),'w').write(out)
-open(os.path.join(R,'follow.html'),'w').write(out.replace('<body>','<body>\n<script>window.FOLLOW=true</script>',1).replace("<title>Adnan's Launchpad</title>","<title>Advisor · Adnan's Launchpad</title>",1))
+open(os.path.join(R,'follow.html'),'w').write(out.replace('<body>','<body>\n<script>window.FOLLOW=true</script>',1).replace("<title>Adnan's Launchpad</title>","<title>Advisor · Adnan's Launchpad</title>",1).replace('<link rel="manifest" href="manifest.webmanifest">','<link rel="manifest" href="follow.webmanifest">',1).replace('<meta name="apple-mobile-web-app-title" content="Adnan">','<meta name="apple-mobile-web-app-title" content="Advisor">',1))
 p=os.path.join(R,'sw.js');w=open(p).read();w=re.sub(r"adnan-lp-[\w.]+'","adnan-lp-"+ver+"'",w,count=1);open(p,'w').write(w)
 print('built',len(out),'cache',ver)
